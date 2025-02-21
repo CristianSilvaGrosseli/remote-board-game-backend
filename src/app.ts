@@ -6,6 +6,7 @@ import logger from 'morgan';
 
 import indexRouter from './routes/index';
 import playerRouter from './routes/player';
+import roomRouter from './routes/room';
 
 const app: express.Application = express();
 
@@ -21,6 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/player', playerRouter);
+app.use('/room', roomRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
