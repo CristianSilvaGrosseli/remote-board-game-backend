@@ -7,6 +7,8 @@
 import app from '../app';
 import debug from 'debug';
 import http from 'http';
+import { Server } from "socket.io";
+import { ConnectionEstablished, ConnectionClosed } from "../websocket-front-controller/WebsocketInterface";
 
 const logger = debug('remote-loboards-backend:server');
 
@@ -14,18 +16,30 @@ const logger = debug('remote-loboards-backend:server');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+const server = http.createServer(app);
+const io = new Server(server);
 
 /**
  * Listen on provided port, on all network interfaces.
  */
+
+io.on("connection", (socket) => {
+    socket.on('disconnect', () => {
+      console.log('user disconnected');
+      ConnectionClosed();
+    });
+
+    console.info("Connection Established");
+    console.log(socket);
+    ConnectionEstablished();
+});
 
 server.listen(port);
 server.on('error', onError);
@@ -89,4 +103,6 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   logger('Listening on ' + bind);
+  console.log("Listening on " + bind );
+  
 }
